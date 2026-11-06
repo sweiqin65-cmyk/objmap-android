@@ -1,0 +1,55 @@
+name: Build Android APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Fetch original ZeldaMods ObjMap
+        run: git clone --depth 1 https://github.com/zeldamods/objmap.git upstream
+      - name: Apply mobile collector patch
+        run: |
+          cd upstream
+          python3 ../install.py
+      - name: Install web dependencies
+        run: |
+          cd upstream
+          pnpm install --no-frozen-lockfile
+          pnpm add @capacitor/core @capacitor/android
+          pnpm add -D @capacitor/cli
+      - name: Build web assets
+        run: |
+          cd upstream
+          pnpm build
+      - name: Create Android project
+        run: |
+          cd upstream
+          npx cap add android
+          npx cap sync android
+      - name: Build debug APK
+        run: |
+          cd upstream/android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+      - name: Upload installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ObjMap-Android-debug-APK
+          path: upstream/android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
