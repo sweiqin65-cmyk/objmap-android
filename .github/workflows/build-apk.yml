@@ -20,8 +20,12 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+      
       - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
       - name: Fetch original ZeldaMods ObjMap
+
         run: git clone --depth 1 https://github.com/zeldamods/objmap.git upstream
       - name: Apply mobile collector patch
         run: |
