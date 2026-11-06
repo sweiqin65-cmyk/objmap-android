@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
       - uses: pnpm/action-setup@v4
         with:
           version: 9
@@ -44,8 +44,10 @@ jobs:
       - name: Create Android project
         run: |
           cd upstream
-          npx cap add android
-          npx cap sync android
+          node --version
+          which node
+          pnpm exec cap add android
+          pnpm exec cap sync android
       - name: Build debug APK
         run: |
           cd upstream/android
