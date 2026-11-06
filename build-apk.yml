@@ -42,8 +42,9 @@ jobs:
           cd upstream
           node --version
           which node
-          npx cap add android
-          npx cap sync android
+          pnpm exec cap add android
+          pnpm exec cap sync android
+          
       - name: Build debug APK
         run: |
           cd upstream/android
