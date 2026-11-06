@@ -40,6 +40,8 @@ jobs:
       - name: Create Android project
         run: |
           cd upstream
+          node --version
+          which node
           npx cap add android
           npx cap sync android
       - name: Build debug APK
